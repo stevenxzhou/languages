@@ -1,6 +1,6 @@
 package patterns.factory;
 
-public interface Shape {
+interface Shape {
     double getArea();
     String getName();
 }

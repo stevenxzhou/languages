@@ -13,7 +13,7 @@ public class Logger {
         }
     }
 
-    private static Logger logger;
+    private static volatile Logger logger;
 
     public static synchronized Logger getInstance() {
         String callerClassName = getCallerClassName();
