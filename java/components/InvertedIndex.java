@@ -2,62 +2,57 @@ package components;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class InvertedIndex {
 
-    private final Map<String, Set<Integer>> wordToDocIds = new ConcurrentHashMap<>();
-    private final Map<Integer, Set<String>> docIdToDoc = new ConcurrentHashMap<>();
+    private final Map<Integer, Set<String>> docId2Doc = new ConcurrentHashMap<>();
+    private final Map<String, Set<Integer>> word2DocId = new ConcurrentHashMap<>();
+
 
     public InvertedIndex() {}
 
     public void addDocument(int id, List<String> doc) {
-
-        if (doc == null || doc.isEmpty()) {
+        if (doc == null || doc.size() == 0) {
             return;
         }
 
-        docIdToDoc.computeIfAbsent(id, k -> new HashSet<>(doc));
+        docId2Doc.computeIfAbsent(id, k -> new HashSet<String>()).addAll(doc.stream().map(word -> word.toLowerCase()).collect(Collectors.toList()));
 
-        // Loop words from doc
-        // Add id to {word: set<String>}
         for (String word : doc) {
-            String lowerCaseWord = word.toLowerCase();
-            wordToDocIds.computeIfAbsent(lowerCaseWord, k -> new HashSet<>());
-            wordToDocIds.get(lowerCaseWord).add(id);
+            word2DocId.computeIfAbsent(word.toLowerCase(), k -> new HashSet<Integer>()).add(id);
         }
-    }
+    };
 
     public List<Integer> search(String word) {
-        String lowerCaseWord = word.toLowerCase();
-        if (!wordToDocIds.containsKey(lowerCaseWord)) {
-            return  new ArrayList<>();
+        String lowerWord = word.toLowerCase();
+        if (!word2DocId.containsKey(lowerWord)) {
+            return new ArrayList<>();
         }
-        
-        return new ArrayList<>(wordToDocIds.get(lowerCaseWord));
+
+        return new ArrayList<>(word2DocId.get(lowerWord));
     }
 
     public void deleteDocument(int id) {
-        // loop hashMap, remove each ids. 
-        if (!docIdToDoc.containsKey(id)) {
+        if (!docId2Doc.containsKey(id)) {
             return;
         }
 
-        List<String> doc = new ArrayList<>(docIdToDoc.get(id));
-        docIdToDoc.remove(id);
+        Set<String> doc = docId2Doc.get(id);
+        docId2Doc.remove(id);
 
         for (String word : doc) {
-            String lowerCaseWord = word.toLowerCase();
-            Set<Integer> ids =  wordToDocIds.get(lowerCaseWord);
-            if (ids == null || ids.isEmpty()) {
+            if (!word2DocId.containsKey(word)) {
                 continue;
             }
-            ids.remove(id);
-            if (ids.size() == 0) {
-                wordToDocIds.remove(lowerCaseWord);
+            word2DocId.get(word).remove(id);
+
+            if (word2DocId.get(word).isEmpty()) {
+                word2DocId.remove(word);
             }
         }
     }
-
+ 
     public static void main(String[] args)
     {
         InvertedIndex index = new InvertedIndex();
