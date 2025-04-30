@@ -1,4 +1,4 @@
-package components;
+package algorithms;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -8,7 +8,6 @@ public class InvertedIndex {
 
     private final Map<Integer, Set<String>> docId2Doc = new ConcurrentHashMap<>();
     private final Map<String, Set<Integer>> word2DocId = new ConcurrentHashMap<>();
-
 
     public InvertedIndex() {}
 
