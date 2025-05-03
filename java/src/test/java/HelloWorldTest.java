@@ -5,6 +5,6 @@ public class HelloWorldTest {
 
     @Test
     public void testHelloWorld() {
-        assertEquals(2, 1 + 1, "1 + 1 should equal 2");
+        assertEquals("Hello World!", HelloWorld.sayHello(), "1 + 1 should equal 2");
     }
 }
