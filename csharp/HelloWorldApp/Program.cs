@@ -1,8 +1,10 @@
 ﻿using System;
+
 class Program
 {
     static void Main(string[] args)
     {
-        Console.Write("Hello world!".ToLower());
+        ClassTest ct = new ClassTest();
+        ct.Test();
     }
 }
